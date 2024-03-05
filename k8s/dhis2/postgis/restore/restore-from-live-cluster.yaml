@@ -1,0 +1,85 @@
+# Ref: https://cloudnative-pg.io/documentation/1.21/bootstrap/#bootstrap-from-a-live-cluster-pg_basebackup
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: dhis2-postgis16-cluster-restore
+  namespace: dhis2
+  labels:
+    app: postgis16-cluster
+  annotations:
+    proxy.istio.io/config: '{ "holdApplicationUntilProxyStarts": true }'
+spec:
+  imageName: ghcr.io/cloudnative-pg/postgis:16-3.4
+  instances: 3
+  startDelay: 900
+  stopDelay: 900
+  primaryUpdateStrategy: unsupervised
+
+# PostGres Best Practices for the Logging 
+  #  - https://www.enterprisedb.com/blog/how-get-best-out-postgresql-logs
+  #  - https://medium.com/google-cloud/correlate-statement-logs-in-cloudsql-for-postgres-with-connection-sessions-5bae4ade38f5
+  #  - PostgreSQL Official Documentation on pg_stat_statements: https://www.postgresql.org/docs/current/pgstatstatements.html
+  #  - pgAudit GitHub Repository: https://github.com/pgaudit/pgaudit
+  postgresql:
+    parameters:
+      log_min_messages: "warning" # From "error" to "warning" to reduce informational messages
+      pg_stat_statements.track: top # From "all" to "top" to only track top-level statements
+      auto_explain.log_min_duration: '30s' # From "10s" to "30s" to reduce slow query logs
+      pgaudit.log: "ddl, role" # From "all, -misc" to specific events like DDL and role changes
+      log_connections: "off" # Reduced connection logs
+      log_disconnections: "off" # Reduced disconnection logs
+      log_hostname: "off" # Avoided logging hostnames
+      log_temp_files: "1024" # Log temp files larger than 1MB
+      log_lock_waits: "on" # Keep "on" if monitoring for lock waits
+      log_checkpoints: "on" # Keep "on" for checkpointing information
+      shared_buffers: 256MB
+      pg_stat_statements.max: '10000'
+      pgaudit.log_catalog: "off"
+      pgaudit.log_parameter: "on"
+      pgaudit.log_relation: "on"
+    pg_hba:
+      - host all all all md5
+
+
+  bootstrap:
+    pg_basebackup:
+      source: dhis2-postgis16-cluster
+
+  storage:
+    storageClass: standard
+    size: 5Gi
+
+  replica:
+    enabled: true
+    source: dhis2-postgis16-cluster
+
+  serviceAccountTemplate:
+    metadata:
+      annotations:
+        # k8s service account is created with the same as `metadata.name` above
+        # ensure an appropriate storage role(s) and workload identity is assigned: https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
+        iam.gke.io/gcp-service-account: dhis2-backup@phx-01h28kjpmp42v8xh59v0qvfpxa.iam.gserviceaccount.com
+
+  backup:
+    barmanObjectStore:
+      destinationPath: gs://dhis2-backup
+      googleCredentials:
+        gkeEnvironment: true
+    retentionPolicy: "90d"	
+
+  externalClusters:
+  - name: dhis2-postgis16-cluster
+    connectionParameters:
+      host: dhis2-postgis16-cluster-rw.server.svc
+      user: streaming_replica
+      sslmode: verify-full
+      dbname: dhis2
+    sslKey:
+      name: dhis2-postgis16-cluster-replication
+      key: tls.key
+    sslCert:
+      name: dhis2-postgis16-cluster-replication
+      key: tls.crt
+    sslRootCert:
+      name: dhis2-postgis16-cluster-ca
+      key: ca.crt

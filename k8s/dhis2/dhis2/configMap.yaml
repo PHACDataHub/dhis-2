@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dhis2-conf
+  namespace: dhis2
+data:
+  dhis.conf: |
+    connection.dialect = org.hibernate.dialect.PostgreSQLDialect
+    connection.driver_class = org.postgresql.Driver
+    connection.url = jdbc:postgresql://dhis2-postgis16-cluster-rw.dhis2/dhis
+    connection.username = ${DB_USERNAME}
+    connection.password = ${DB_PASSWORD}
+    tracker.import.preheat.cache.enabled=off
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dhis2-log4j2
+  namespace: dhis2
+data:
+  log4j2.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <Configuration status="WARN" monitorInterval="10">
+        <Properties>
+            <Property name="layout">%-5level %c [%t] %msg%n</Property>
+        </Properties>
+        <Appenders>
+            <Console name="console" target="SYSTEM_OUT">
+                <PatternLayout pattern="${layout}" />
+            </Console>
+        </Appenders>
+        <Loggers>
+            <Logger name="org.hisp.dhis" level="INFO" additivity="true"/>
+            <Root level="WARN">
+                <AppenderRef ref="console"/>
+            </Root>
+        </Loggers>
+    </Configuration>

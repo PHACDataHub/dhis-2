@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dhis2
+  namespace: dhis2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dhis2
+  template:
+    metadata:
+      labels:
+        app: dhis2
+      annotations:
+        proxy.istio.io/config: '{ "holdApplicationUntilProxyStarts": true }'
+    spec:
+      containers:
+        - name: istio-proxy
+          image: auto
+          resources:
+            requests:
+              # Experiment: using the minimum pod resources https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-resource-requests#compute-class-min-max
+              cpu: 50m # + `dhis2` container = 250m
+              memory: 112Mi # + `dhis2` container = 512MiB
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+        - name: dhis2
+          image: dhis2/core-dev:latest
+          imagePullPolicy: Always
+          resources:
+            # Autopilot only considers requests (see https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-resource-requests#resource-limits)
+            requests:
+              # Experiment: using the minimum pod resources https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-resource-requests#compute-class-min-max
+              cpu: 200m # + `isito-proxy` container = 250m
+              memory: 500Mi # + `isito-proxy` container = 612MiB
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          ports:
+            - containerPort: 8080
+            - containerPort: 8081
+            - containerPort: 9010
+          env:
+            - name: JAVA_OPTS
+              value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8081 -Dlog4j2.configurationFile=/opt/dhis2/log4j2.xml -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9010 -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dhis2-postgis16-cluster
+                  key: password
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dhis2-postgis16-cluster
+                  key: username
+          volumeMounts:
+            - name: dhis2-conf
+              mountPath: /opt/dhis2/dhis.conf
+              subPath: dhis.conf
+              readOnly: true
+            - name: dhis2-log4j2
+              mountPath: /opt/dhis2/log4j2.xml
+              subPath: log4j2.xml
+              readOnly: true
+      volumes:
+        - name: dhis2-conf
+          configMap:
+            name: dhis2-conf
+        - name: dhis2-log4j2
+          configMap:
+            name: dhis2-log4j2
