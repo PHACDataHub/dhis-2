@@ -48,12 +48,12 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: dhis2-postgis16-cluster
+                  name: dhis2-postgis16-cluster-app
                   key: password
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: dhis2-postgis16-cluster
+                  name: dhis2-postgis16-cluster-app
                   key: username
           volumeMounts:
             - name: dhis2-conf
