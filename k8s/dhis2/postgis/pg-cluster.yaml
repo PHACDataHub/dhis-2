@@ -7,7 +7,7 @@ metadata:
     app: dhis2-postgis16-cluster
 spec:
   imageName: ghcr.io/cloudnative-pg/postgis:16-3.4
-  instances: 2
+  instances: 3
   startDelay: 900
   stopDelay: 900
   primaryUpdateStrategy: unsupervised
