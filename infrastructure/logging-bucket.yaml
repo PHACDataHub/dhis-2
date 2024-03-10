@@ -31,6 +31,6 @@ spec:
   destination:
     loggingLogBucketRef:
       external: "logging.googleapis.com/projects/pht-01hrfr2t7yq/locations/northamerica-northeast1/buckets/dhis2-application-logs-pht-01hrfr2t7yq"
-  # Log filter to specify which logs to include; excludes logs from 'istio-proxy' container in the 'server' namespace
+  # Log filter to specify which logs to include; excludes logs from 'istio-proxy' container in the 'DHIS2' namespace
   filter: |
     resource.labels.namespace_name="dhis2" AND NOT resource.labels.container_name="istio-proxy"

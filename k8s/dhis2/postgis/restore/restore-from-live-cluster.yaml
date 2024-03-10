@@ -70,7 +70,7 @@ spec:
   externalClusters:
   - name: dhis2-postgis16-cluster
     connectionParameters:
-      host: dhis2-postgis16-cluster-rw.server.svc
+      host: dhis2-postgis16-cluster-rw.dhis2.svc
       user: streaming_replica
       sslmode: verify-full
       dbname: dhis2
