@@ -1,0 +1,13 @@
+apiVersion: dns.cnrm.cloud.google.com/v1beta1
+kind: DNSPolicy
+metadata:
+  name: dhis2-net-dnspolicy
+  namespace: cnrm-system
+  annotations:
+    cnrm.cloud.google.com/state-into-spec: merge
+spec:
+  description: "Enables DNS logging for the DHIS2 VPC"
+  enableLogging: true
+  networks:
+    - networkRef:
+        external: projects/pht-01hrfr2t7yq/global/networks/dhis2-net

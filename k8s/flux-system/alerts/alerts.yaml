@@ -22,7 +22,7 @@ metadata:
 spec:
   summary: "Notifications for flux reconciliations"
   eventMetadata:
-    cluster: "gke_phx-01h28kjpmp42v8xh59v0qvfpxa_northamerica-northeast1_dhis2-cluster"
+    cluster: "gke_pht-01hrfr2t7yq_northamerica-northeast1_dhis2-cluster"
     region: "northamerica-northeast1"
   providerRef:
     name: slack-bot

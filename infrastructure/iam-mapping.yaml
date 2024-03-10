@@ -1,0 +1,150 @@
+# project iam bindings
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPartialPolicy
+metadata:
+  name: project-iampolicy
+  namespace: "cnrm-system"
+spec:
+  bindings:
+    - members:
+        - memberFrom:
+            serviceAccountRef:
+              name: dhis2-deployment
+      role: roles/cloudtrace.agent
+    - members:
+        - memberFrom:
+            serviceAccountRef:
+              name: dns01-solver
+      role: roles/dns.admin
+    - members:
+        - memberFrom:
+            serviceAccountRef:
+              name: sops-kms
+      role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+    - members:
+        - member: serviceAccount:service-305495415810@gcp-sa-gkehub.iam.gserviceaccount.com
+      role: roles/gkehub.serviceAgent
+    - members:
+        - member: serviceAccount:service-305495415810@gcp-sa-gkehub.iam.gserviceaccount.com
+      role: roles/gkehub.crossProjectServiceAgent
+    - members:
+        - member: serviceAccount:service-305495415810@gcp-sa-servicemesh.iam.gserviceaccount.com
+      role: roles/anthosservicemesh.serviceAgent
+  resourceRef:
+    apiVersion: resourcemanager.cnrm.cloud.google.com/v1beta1
+    external: projects/pht-01hrfr2t7yq
+    kind: Project
+---
+# bucket iam bindings
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPartialPolicy
+metadata:
+  name: dhis2-postgis-backup-iam
+  namespace: "cnrm-system"
+spec:
+  bindings:
+    - members:
+        - memberFrom:
+            serviceAccountRef:
+              name: dhis2-postgis-backup
+      role: roles/storage.admin
+  resourceRef:
+    apiVersion: storage.cnrm.cloud.google.com/v1beta1
+    kind: StorageBucket
+    name: dhis2-postgis-backup-pht-01hrfr2t7yq
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPartialPolicy
+metadata:
+  name: dhis2-test-coverage-reports-iam
+  namespace: "cnrm-system"
+spec:
+  bindings:
+    - members:
+        - member: serviceAccount:552862935794@cloudbuild.gserviceaccount.com
+      role: roles/storage.objectCreator
+    - members:
+        - member: serviceAccount:552862935794@cloudbuild.gserviceaccount.com
+      role: roles/storage.legacyBucketReader
+  resourceRef:
+    apiVersion: storage.cnrm.cloud.google.com/v1beta1
+    kind: StorageBucket
+    name: dhis2-test-coverage-reports-01hp04dtnkf
+---
+# service account bindings
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPartialPolicy
+metadata:
+  name: dhis2-wi-gcr-credentials-sync
+  namespace: "cnrm-system"
+spec:
+  bindings:
+    - members:
+        - member: serviceAccount:pht-01hrfr2t7yq.svc.id.goog[flux-system/image-reflector-controller]
+      role: roles/iam.workloadIdentityUser
+  resourceRef:
+    apiVersion: iam.cnrm.cloud.google.com/v1beta1
+    kind: IAMServiceAccount
+    name: gcr-credentials-sync
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPartialPolicy
+metadata:
+  name: dhis2-wi-dns01-solver
+  namespace: "cnrm-system"
+spec:
+  bindings:
+    - members:
+        - member: serviceAccount:pht-01hrfr2t7yq.svc.id.goog[cert-manager/cert-manager]
+      role: roles/iam.workloadIdentityUser
+  resourceRef:
+    apiVersion: iam.cnrm.cloud.google.com/v1beta1
+    kind: IAMServiceAccount
+    name: dns01-solver
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPartialPolicy
+metadata:
+  name: dhis2-wi-sops-kms
+  namespace: "cnrm-system"
+spec:
+  bindings:
+    - members:
+        - member: serviceAccount:pht-01hrfr2t7yq.svc.id.goog[flux-system/kustomize-controller]
+      role: roles/iam.workloadIdentityUser
+  resourceRef:
+    apiVersion: iam.cnrm.cloud.google.com/v1beta1
+    kind: IAMServiceAccount
+    name: sops-kms
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPartialPolicy
+metadata:
+  name: dhis2-wi-backup
+  namespace: "cnrm-system"
+spec:
+  bindings:
+    - members:
+        - member: serviceAccount:pht-01hrfr2t7yq.svc.id.goog[dhis2/dhis2-postgis16-cluster-backup]
+        - member: serviceAccount:pht-01hrfr2t7yq.svc.id.goog[dhis2/dhis2-postgis16-cluster-restore]
+        - member: serviceAccount:pht-01hrfr2t7yq.svc.id.goog[dhis2/dhis2-postgis16-cluster]
+      role: roles/iam.workloadIdentityUser
+  resourceRef:
+    apiVersion: iam.cnrm.cloud.google.com/v1beta1
+    kind: IAMServiceAccount
+    name: dhis2-postgis-backup
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPartialPolicy
+metadata:
+  name: dhis2-wi-server
+  namespace: "cnrm-system"
+spec:
+  bindings:
+    - members:
+        - member: serviceAccount:pht-01hrfr2t7yq.svc.id.goog[dhis2/dhis2]
+      role: roles/iam.workloadIdentityUser
+  resourceRef:
+    apiVersion: iam.cnrm.cloud.google.com/v1beta1
+    kind: IAMServiceAccount
+    name: server-deployment

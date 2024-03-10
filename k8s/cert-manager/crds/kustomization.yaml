@@ -89,4 +89,4 @@ patches:
       - op: add
         path: "/metadata/annotations"
         value:
-          iam.gke.io/gcp-service-account: dns01-solver@phx-01h28kjpmp42v8xh59v0qvfpxa.iam.gserviceaccount.com
+          iam.gke.io/gcp-service-account: dns01-solver@pht-01hrfr2t7yq.iam.gserviceaccount.com

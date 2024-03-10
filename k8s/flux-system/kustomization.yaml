@@ -31,7 +31,7 @@ patches:
         name: kustomize-controller
         namespace: flux-system
         annotations:
-          iam.gke.io/gcp-service-account: sops-kms@phx-01h28kjpmp42v8xh59v0qvfpxa.iam.gserviceaccount.com     
+          iam.gke.io/gcp-service-account: sops-kms@pht-01hrfr2t7yq.iam.gserviceaccount.com     
     target:
       kind: ServiceAccount
       name: kustomize-controller

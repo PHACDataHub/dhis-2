@@ -9,7 +9,7 @@ spec:
   gateways:
   - istio-ingress/public-gateway
   http:
-  - name: gateway-to-server
+  - name: gateway-to-dhis2
     match:
     - uri:
         prefix: /
