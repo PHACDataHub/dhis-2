@@ -14,4 +14,4 @@ patches:
   patch: |-
     - op: add
       path: /spec/googleServiceAccount
-      value: dhis2-provisioner@pht-01hrfr2t7yq.iam.gserviceaccount.coms
+      value: dhis2-provisioner@pht-01hrfr2t7yq.iam.gserviceaccount.com
