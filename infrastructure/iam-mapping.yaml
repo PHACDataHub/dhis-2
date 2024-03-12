@@ -69,24 +69,9 @@ spec:
   resourceRef:
     apiVersion: storage.cnrm.cloud.google.com/v1beta1
     kind: StorageBucket
-    name: dhis2-test-coverage-reports-01hp04dtnkf
+    name: dhis2-test-coverage-reports-pht-01hrfr2t7yq
 ---
 # service account bindings
-apiVersion: iam.cnrm.cloud.google.com/v1beta1
-kind: IAMPartialPolicy
-metadata:
-  name: dhis2-wi-gcr-credentials-sync
-  namespace: "cnrm-system"
-spec:
-  bindings:
-    - members:
-        - member: serviceAccount:pht-01hrfr2t7yq.svc.id.goog[flux-system/image-reflector-controller]
-      role: roles/iam.workloadIdentityUser
-  resourceRef:
-    apiVersion: iam.cnrm.cloud.google.com/v1beta1
-    kind: IAMServiceAccount
-    name: gcr-credentials-sync
----
 apiVersion: iam.cnrm.cloud.google.com/v1beta1
 kind: IAMPartialPolicy
 metadata:
