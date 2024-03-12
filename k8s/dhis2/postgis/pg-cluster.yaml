@@ -61,7 +61,7 @@ spec:
       annotations:
         # k8s service account is created with the same as `metadata.name` above
         # ensure an appropriate storage role(s) and workload identity is assigned: https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
-        iam.gke.io/gcp-service-account: dhis2-postgis-backup-pht-01hrfr2t7yq@pht-01hrfr2t7yq.iam.gserviceaccount.com
+        iam.gke.io/gcp-service-account: dhis2-postgis-backup@pht-01hrfr2t7yq.iam.gserviceaccount.com
 
   # info: https://cloudnative-pg.io/documentation/1.21/appendixes/object_stores/#running-inside-google-kubernetes-engine
   backup:
