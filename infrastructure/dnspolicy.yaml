@@ -1,13 +1,21 @@
+# This DNSPolicy configuration is designed to enhance the observability and security of DNS operations within the DHIS2 VPC network.
+# By enabling DNS logging, system administrators and security teams can gain insights into DNS queries and responses,
+# which is critical for troubleshooting, monitoring, and detecting potential security threats.
+
 apiVersion: dns.cnrm.cloud.google.com/v1beta1
 kind: DNSPolicy
 metadata:
+  # The name of the DNS policy. This identifier should be unique within the namespace and descriptive of the policy's purpose or associated resources.
   name: dhis2-net-dnspolicy
-  namespace: cnrm-system
+  namespace: cnrm-system  # Specifies the Kubernetes namespace where this DNS policy is applied, usually tied to cloud resource management.
   annotations:
+    # This annotation ensures that any manual changes to the DNS policy made in Google Cloud Platform are automatically merged back into the resource spec in Kubernetes.
+    # It represents an infrastructure-as-code approach, ensuring the Kubernetes definitions stay in sync with the cloud state.
     cnrm.cloud.google.com/state-into-spec: merge
 spec:
-  description: "Enables DNS logging for the DHIS2 VPC"
-  enableLogging: true
+  description: "Enables DNS logging for the DHIS2 VPC"  # Provides a brief description of the policy's purpose, enhancing clarity for anyone reviewing the configuration.
+  enableLogging: true  # Activates DNS query logging. This is crucial for creating audit trails and diagnosing network issues.
   networks:
+    # Specifies the VPC network to which this DNS policy applies. Using a reference to an externally defined network ensures that DNS logging is scoped correctly.
     - networkRef:
-        external: projects/pht-01hrfr2t7yq/global/networks/dhis2-net
+        external: projects/pht-01hrfr2t7yq/global/networks/dhis2-net  # The fully qualified identifier of the VPC network in Google Cloud Platform.

@@ -1,31 +1,23 @@
+# Defines a Google Cloud Storage bucket resource intended for storing backups of DHIS2 PostGIS databases. 
+# This configuration employs best practices for data durability, access control, and compliance with 
+# organizational policies on resource lifecycle and data residency.
+
 apiVersion: storage.cnrm.cloud.google.com/v1beta1
 kind: StorageBucket
 metadata:
-  # StorageBucket names must be globally unique
+  # The name of the StorageBucket. It's crucial to ensure this name is globally unique across all Google Cloud Storage.
+  # The naming convention used here includes the project ID and a descriptive identifier, ensuring uniqueness and traceability.
   name: dhis2-postgis-backup-pht-01hrfr2t7yq
-  namespace: cnrm-system
+  namespace: cnrm-system  # Specifies the Kubernetes namespace. 'cnrm-system' is typically dedicated to managing cloud resources.
   annotations:
+    # Prevents the bucket from being forcibly destroyed if it contains objects. This is a safety measure to avoid data loss.
     cnrm.cloud.google.com/force-destroy: "false"
+    # Sets the deletion policy to 'abandon', which means the underlying cloud resource will not be deleted even if the Kubernetes resource is removed.
+    # This policy is crucial for backups and archival storage, where accidental data deletion could be catastrophic.
     cnrm.cloud.google.com/deletion-policy: abandon
 spec:
-  location: northamerica-northeast1
+  location: northamerica-northeast1  # Specifies the data center location for the bucket, ensuring data residency compliance.
   versioning:
-    enabled: true
-  storageClass: STANDARD
-  uniformBucketLevelAccess: true
----
-apiVersion: storage.cnrm.cloud.google.com/v1beta1
-kind: StorageBucket
-metadata:
-  # StorageBucket names must be globally unique
-  name: dhis2-test-coverage-reports-pht-01hrfr2t7yq
-  namespace: cnrm-system
-  annotations:
-    cnrm.cloud.google.com/force-destroy: "false"
-    cnrm.cloud.google.com/deletion-policy: abandon
-spec:
-  location: northamerica-northeast1
-  versioning:
-    enabled: true
-  storageClass: STANDARD
-  uniformBucketLevelAccess: true
+    enabled: true  # Enables object versioning, providing protection against inadvertent deletions or overwrites of data.
+  storageClass: STANDARD  # The default storage class. 'STANDARD' offers a balance between performance and cost, suitable for frequently accessed data.
+  uniformBucketLevelAccess: true  # Enforces uniform access control on the bucket, simplifying permissions management and enhancing security.

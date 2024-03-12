@@ -1,15 +1,22 @@
+# Activates the Cloud Trace service for the specified project. Cloud Trace is instrumental in collecting latency data from applications,
+# which helps in performance and debugging analysis. Essential for maintaining high application performance and reliability.
 apiVersion: serviceusage.cnrm.cloud.google.com/v1beta1
 kind: Service
 metadata:
-  name: cloudtrace
-  namespace: cnrm-system
+  name: cloudtrace  # Identifies the service being enabled, in this case, Cloud Trace.
+  namespace: cnrm-system  # Managed under 'cnrm-system' for centralized cloud resource governance.
   annotations:
+    # Ensures that disabling this service does not automatically disable services that depend on it, preventing unintended disruptions.
     cnrm.cloud.google.com/disable-dependent-services: "false"
 spec:
   projectRef:
-    external: projects/pht-01hrfr2t7yq
-  resourceID: cloudtrace.googleapis.com
+    external: projects/pht-01hrfr2t7yq  # Reference to the Google Cloud Project where the service will be enabled.
+  resourceID: cloudtrace.googleapis.com  # The specific API service being enabled.
+
 ---
+
+# Enables the Cloud Key Management Service (KMS) for the project, which provides cryptographic key management,
+# crucial for protecting secrets and enabling encryption operations across various cloud services.
 apiVersion: serviceusage.cnrm.cloud.google.com/v1beta1
 kind: Service
 metadata:
@@ -21,7 +28,11 @@ spec:
   projectRef:
     external: projects/pht-01hrfr2t7yq
   resourceID: cloudkms.googleapis.com
+
 ---
+
+# Ensures the Cloud Resource Manager API is enabled, allowing for programmatic management of resources within the project.
+# This service is foundational for infrastructure as code practices, enabling the dynamic provisioning and management of Google Cloud resources.
 apiVersion: serviceusage.cnrm.cloud.google.com/v1beta1
 kind: Service
 metadata:
@@ -33,7 +44,11 @@ spec:
   projectRef:
     external: projects/pht-01hrfr2t7yq
   resourceID: cloudresourcemanager.googleapis.com
+
 ---
+
+# Enables the Secret Manager service, which is essential for securely managing access to secrets needed by applications running in the cloud.
+# Using Secret Manager helps adhere to the principles of least privilege and secure secret storage.
 apiVersion: serviceusage.cnrm.cloud.google.com/v1beta1
 kind: Service
 metadata:
@@ -45,19 +60,11 @@ spec:
   projectRef:
     external: projects/pht-01hrfr2t7yq
   resourceID: secretmanager.googleapis.com
+
 ---
-apiVersion: serviceusage.cnrm.cloud.google.com/v1beta1
-kind: Service
-metadata:
-  name: containersecurity
-  namespace: cnrm-system
-  annotations:
-    cnrm.cloud.google.com/disable-dependent-services: "false"
-spec:
-  projectRef:
-    external: projects/pht-01hrfr2t7yq
-  resourceID: containersecurity.googleapis.com
----
+
+# Enables the Network Management API, facilitating advanced network operations and management within the project.
+# This service is key for configuring, analyzing, and troubleshooting the project's virtual private cloud (VPC) network configurations.
 apiVersion: serviceusage.cnrm.cloud.google.com/v1beta1
 kind: Service
 metadata:

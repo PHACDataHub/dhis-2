@@ -1,23 +1,30 @@
+# KMSCryptoKey is a Google Cloud KMS (Key Management Service) resource managed by Config Connector.
+# This key is specifically used by sops (Secrets OPerationS) for encrypting/decrypting secrets used by the Flux CD kustomize controller.
+# It's essential for managing secret data within GitOps workflows securely.
 apiVersion: kms.cnrm.cloud.google.com/v1beta1
 kind: KMSCryptoKey
 metadata:
-  name: sops-flux-key
-  namespace: cnrm-system
+  name: sops-flux-key  # Unique name of the CryptoKey within the namespace.
+  namespace: cnrm-system  # Namespace scoped for cloud resource management, ensuring separation of concerns.
   annotations:
-    cnrm.cloud.google.com/deletion-policy: abandon
-    cnrm.cloud.google.com/state-into-spec: merge
+    cnrm.cloud.google.com/deletion-policy: abandon  # On deletion of this K8s resource, the underlying GCP resource is not deleted.
+    cnrm.cloud.google.com/state-into-spec: merge  # Reflects the state from GCP into this resource's spec, ensuring drift is captured.
 spec:
   keyRingRef:
-    name: sops
-  # needs to be seconds as per https://cloud.google.com/config-connector/docs/reference/resource-docs/kms/kmscryptokey#spec
-  rotationPeriod: 5184000s # 60days
+    name: sops  # References the KMSKeyRing this key belongs to.
+  rotationPeriod: 5184000s # Specifies the key rotation period in seconds. Here, it's set to 60 days, aligning with best security practices for key rotation to mitigate risks.
+
 ---
+
+# KMSKeyRing is a resource for Google Cloud KMS managed via Config Connector.
+# Key rings provide a logical grouping of CryptoKeys for organizational purposes.
+# This key ring is dedicated to sops for the Flux CD setup, indicating a focused approach to managing encryption keys for CI/CD operations.
 apiVersion: kms.cnrm.cloud.google.com/v1beta1
 kind: KMSKeyRing
 metadata:
-  name: sops
-  namespace: cnrm-system
+  name: sops  # The unique identifier for the KeyRing within the namespace.
+  namespace: cnrm-system  # Scoped to cnrm-system, which is typically used for resources managed by Config Connector.
   annotations:
-    cnrm.cloud.google.com/state-into-spec: merge
+    cnrm.cloud.google.com/state-into-spec: merge  # Ensures any manual changes in GCP are merged back into the spec of this K8s resource.
 spec:
-  location: northamerica-northeast1
+  location: northamerica-northeast1  # Specifies the GCP region where the KeyRing is located, chosen for proximity to the services using it or for compliance reasons.
