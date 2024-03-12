@@ -63,9 +63,10 @@ spec:
 
 ---
 # The following sections configure IAM policies for various service accounts, assigning them roles that enable workload identity.
-# This feature associates Kubernetes service accounts with GCP service accounts, leveraging GKE's secure identity management capabilities.apiVersion: iam.cnrm.cloud.google.com/v1beta1
+# This feature associates Kubernetes service accounts with GCP service accounts, leveraging GKE's secure identity management capabilities.
 
 # Grants workload identity user role for the dns01-solver service account, facilitating secure, automated DNS management within cert-manager.
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
 kind: IAMPartialPolicy
 metadata:
   name: dhis2-wi-dns01-solver
