@@ -8,7 +8,6 @@ resources:
   - service-account.yaml
   - iam-mapping.yaml
   - kms.yaml
-  - proxy-subnet.yaml
   - logging-bucket.yaml
 
 commonLabels:
