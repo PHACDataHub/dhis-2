@@ -5,7 +5,7 @@ metadata:
   namespace: istio-ingress
 spec:
   dnsNames:
-    - dhis2.phac-aspc.alpha.canada.ca
+    - dhis2.beta.phac-aspc.gc.ca
   issuerRef:
     kind: ClusterIssuer
     # name: letsencrypt-staging

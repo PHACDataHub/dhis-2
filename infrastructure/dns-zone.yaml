@@ -1,5 +1,5 @@
 # DNSManagedZone configuration for DHIS2, defining a managed DNS zone within Google Cloud DNS.
-# This setup facilitates the management of DNS records under the dhis2.phac-aspc.alpha.canada.ca domain,
+# This setup facilitates the management of DNS records under the dhis2.beta.phac-aspc.gc.ca domain,
 # enabling controlled, centralized DNS management for services associated with DHIS2.
 
 apiVersion: dns.cnrm.cloud.google.com/v1beta1
@@ -14,7 +14,7 @@ spec:
   cloudLoggingConfig:
     enableLogging: true  # Enables DNS query logging for the zone, aiding in monitoring and troubleshooting DNS issues.
   description: DHIS2 DNS Zone for alpha DNS  # Descriptive text explaining the purpose and scope of the managed zone.
-  dnsName: dhis2.phac-aspc.alpha.canada.ca.  # The DNS name associated with this zone, trailing dot denotes fully qualified domain name.
+  dnsName: dhis2.beta.phac-aspc.gc.ca.  # The DNS name associated with this zone, trailing dot denotes fully qualified domain name.
   visibility: public  # Marks the DNS zone as public, meaning it is accessible over the internet.
 
 ---
@@ -30,7 +30,7 @@ metadata:
   annotations:
     cnrm.cloud.google.com/state-into-spec: merge  # Keeps the resource spec synced with any external modifications.
 spec:
-  name: "dhis2.phac-aspc.alpha.canada.ca."  # The domain name for the 'A' record, fully qualified.
+  name: "dhis2.beta.phac-aspc.gc.ca."  # The domain name for the 'A' record, fully qualified.
   type: A  # Specifies this is an 'A' record, linking a domain to an IPv4 address.
   ttl: 300  # Time-to-live in seconds; affects DNS caching duration.
   managedZoneRef:
