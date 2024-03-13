@@ -1,0 +1,59 @@
+# DNSManagedZone configuration for DHIS2, defining a managed DNS zone within Google Cloud DNS.
+# This setup facilitates the management of DNS records under the dhis2.beta.phac-aspc.gc.ca domain,
+# enabling controlled, centralized DNS management for services associated with DHIS2.
+
+apiVersion: dns.cnrm.cloud.google.com/v1beta1
+kind: DNSManagedZone
+metadata:
+  name: dhis2-managed-zone  # Unique identifier for the DNS managed zone within the namespace.
+  namespace: cnrm-system  # Namespace for cloud resource management, ensuring resource isolation and organizational control.
+  annotations:
+    # Ensures the managed zone's spec in Kubernetes reflects any manual changes made in Google Cloud, maintaining state consistency.
+    cnrm.cloud.google.com/state-into-spec: merge
+spec:
+  cloudLoggingConfig:
+    enableLogging: true  # Enables DNS query logging for the zone, aiding in monitoring and troubleshooting DNS issues.
+  description: DHIS2 DNS Zone for alpha DNS  # Descriptive text explaining the purpose and scope of the managed zone.
+  dnsName: dhis2.beta.phac-aspc.gc.ca.  # The DNS name associated with this zone, trailing dot denotes fully qualified domain name.
+  visibility: public  # Marks the DNS zone as public, meaning it is accessible over the internet.
+
+---
+
+# DNSRecordSet for creating an 'A' record within the DHIS2 managed DNS zone. 
+# This record maps the domain name to an external IP address, directing internet traffic to the intended resources.
+
+apiVersion: dns.cnrm.cloud.google.com/v1beta1
+kind: DNSRecordSet
+metadata:
+  name: dhis2-dns-record-set  # Unique name for the DNS record set.
+  namespace: cnrm-system  # Indicates the resource is managed within the cnrm-system namespace for cloud resources.
+  annotations:
+    cnrm.cloud.google.com/state-into-spec: merge  # Keeps the resource spec synced with any external modifications.
+spec:
+  name: "dhis2.beta.phac-aspc.gc.ca."  # The domain name for the 'A' record, fully qualified.
+  type: A  # Specifies this is an 'A' record, linking a domain to an IPv4 address.
+  ttl: 300  # Time-to-live in seconds; affects DNS caching duration.
+  managedZoneRef:
+    name: dhis2-managed-zone  # Reference to the managed DNS zone where this record belongs.
+  rrdatasRefs:
+    - name: dhis2-external-ip  # Reference to a ComputeAddress resource providing the IP for this DNS record.
+      kind: ComputeAddress
+
+---
+
+# ComputeAddress configuration defining an external IP address reserved for DHIS2 services. 
+# This IP is referenced by DNSRecordSet to direct traffic to DHIS2's ingress gateway, highlighting 
+# an integrated approach to infrastructure management using Google Cloud's Config Connector.
+
+apiVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeAddress
+metadata:
+  name: dhis2-external-ip  # Name identifying the external IP resource.
+  namespace: cnrm-system  # Scoped under cnrm-system for cloud resource organization.
+  annotations:
+    cnrm.cloud.google.com/state-into-spec: merge  # Auto-merges any direct changes made in GCP to this resource spec in Kubernetes.
+spec:
+  addressType: EXTERNAL  # Specifies that this IP address is external, used for internet-facing resources.
+  description: DHIS2 external ip address for ingress gateway  # Details the purpose of the IP address.
+  location: northamerica-northeast1  # The geographical location where the IP address is provisioned.
+  networkTier: STANDARD  # Specifies the networking tier, STANDARD in this case, indicating default routing and performance characteristics.

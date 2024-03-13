@@ -1,0 +1,48 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: dhis2-postgis
+  namespace: flux-system
+spec:
+  path: ./k8s/dhis2/postgis
+  interval: 2m0s
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: true
+  dependsOn:
+    - name: cnpg-system
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: dhis2-postgis-backup
+  namespace: flux-system
+spec:
+  interval: 2m0s
+  path: ./k8s/dhis2/postgis/backup
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: dhis2-postgis
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: dhis2-app
+  namespace: flux-system
+spec:
+  interval: 2m0s
+  path: ./k8s/dhis2/dhis2
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: dhis2-postgis
+  decryption:
+    provider: sops

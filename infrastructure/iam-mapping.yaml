@@ -1,0 +1,118 @@
+# This section defines IAM policy bindings at the project level. It grants specific roles to various service accounts,
+# aligning with the principle of least privilege while ensuring each component has the necessary permissions to function effectively.
+# This setup exemplifies a secure, maintainable approach to managing access in GCP projects.
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPartialPolicy
+metadata:
+  # The name of the IAM policy - should be unique within the namespace.
+  name: project-iampolicy
+  namespace: "cnrm-system" # Namespace indicating the scope of resources. 'cnrm-system' is typically used for cloud resource management.
+spec:
+  bindings:
+    # Grants DNS administrator role to the dns01-solver service account, essential for managing DNS challenges in cert-manager operations.
+    - members:
+        - memberFrom:
+            serviceAccountRef:
+              name: dns01-solver
+      role: roles/dns.admin
+    # Assigns CryptoKey Encrypter/Decrypter role to the sops-kms service account, allowing it to encrypt/decrypt secrets in cloud KMS.
+    - members:
+        - memberFrom:
+            serviceAccountRef:
+              name: sops-kms
+      role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+    # The following bindings are for Google-managed service accounts used by GKE Hub and Anthos Service Mesh, illustrating how external service accounts can be integrated into IAM policies.
+    - members:
+        - member: serviceAccount:service-305495415810@gcp-sa-gkehub.iam.gserviceaccount.com
+      role: roles/gkehub.serviceAgent
+    - members:
+        - member: serviceAccount:service-305495415810@gcp-sa-gkehub.iam.gserviceaccount.com
+      role: roles/gkehub.crossProjectServiceAgent
+    - members:
+        - member: serviceAccount:service-305495415810@gcp-sa-servicemesh.iam.gserviceaccount.com
+      role: roles/anthosservicemesh.serviceAgent
+  # Links this IAM policy to the specified GCP project, enabling centralized management of project-level permissions.
+  resourceRef:
+    apiVersion: resourcemanager.cnrm.cloud.google.com/v1beta1
+    external: projects/pht-01hrfr2t7yq
+    kind: Project
+
+
+---
+
+
+# Configures IAM policy for the GCS bucket dedicated to DHIS2 PostGIS backups. It assigns storage admin role to the backup service account,
+# illustrating an application-specific backup strategy that emphasizes security and operational autonomy.
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPartialPolicy
+metadata:
+  name: dhis2-postgis-backup-iam
+  namespace: "cnrm-system"
+spec:
+  bindings:
+    - members:
+        - memberFrom:
+            serviceAccountRef:
+              name: dhis2-postgis-backup
+      role: roles/storage.admin  # Enables comprehensive management of GCS bucket contents.
+  # This reference securely ties the IAM policy to the specific storage bucket intended for database backups.
+  resourceRef:
+    apiVersion: storage.cnrm.cloud.google.com/v1beta1
+    kind: StorageBucket
+    name: dhis2-postgis-backup-pht-01hrfr2t7yq
+
+---
+# The following sections configure IAM policies for various service accounts, assigning them roles that enable workload identity.
+# This feature associates Kubernetes service accounts with GCP service accounts, leveraging GKE's secure identity management capabilities.
+
+# Grants workload identity user role for the dns01-solver service account, facilitating secure, automated DNS management within cert-manager.
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPartialPolicy
+metadata:
+  name: dhis2-wi-dns01-solver
+  namespace: "cnrm-system"
+spec:
+  bindings:
+    - members:
+        - member: serviceAccount:pht-01hrfr2t7yq.svc.id.goog[cert-manager/cert-manager]
+      role: roles/iam.workloadIdentityUser
+  resourceRef:
+    apiVersion: iam.cnrm.cloud.google.com/v1beta1
+    kind: IAMServiceAccount
+    name: dns01-solver
+
+# Configures workload identity for the sops-kms service account, ensuring the kustomize-controller can securely decrypt manifests.
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPartialPolicy
+metadata:
+  name: dhis2-wi-sops-kms
+  namespace: "cnrm-system"
+spec:
+  bindings:
+    - members:
+        - member: serviceAccount:pht-01hrfr2t7yq.svc.id.goog[flux-system/kustomize-controller]
+      role: roles/iam.workloadIdentityUser
+  resourceRef:
+    apiVersion: iam.cnrm.cloud.google.com/v1beta1
+    kind: IAMServiceAccount
+    name: sops-kms
+
+# Configures workload identity for the dhis2-postgis-backup service account, so that the postgis backups can be done.
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPartialPolicy
+metadata:
+  name: dhis2-wi-backup
+  namespace: "cnrm-system"
+spec:
+  bindings:
+    - members:
+        - member: serviceAccount:pht-01hrfr2t7yq.svc.id.goog[dhis2/dhis2-postgis16-cluster-backup]
+        - member: serviceAccount:pht-01hrfr2t7yq.svc.id.goog[dhis2/dhis2-postgis16-cluster-restore]
+        - member: serviceAccount:pht-01hrfr2t7yq.svc.id.goog[dhis2/dhis2-postgis16-cluster]
+      role: roles/iam.workloadIdentityUser
+  resourceRef:
+    apiVersion: iam.cnrm.cloud.google.com/v1beta1
+    kind: IAMServiceAccount
+    name: dhis2-postgis-backup
