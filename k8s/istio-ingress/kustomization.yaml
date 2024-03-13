@@ -3,7 +3,7 @@ kind: Kustomization
 
 resources:
 - gw-certificate.yaml
-- public-gateway.yaml
+- mesh-gateway.yaml
 - ingress.yaml
 - namespace.yaml
 
