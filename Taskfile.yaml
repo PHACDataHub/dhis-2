@@ -1,21 +1,22 @@
 version: '3'
 
+# Define global variables to be used across tasks for consistency and ease of updates.
 vars:
-  PROJECT_ID: pht-01hrfr2t7yq
-  REGION: northamerica-northeast1
-  NAME: dhis2
-  FLEET_HOST_PROJECT_ID: php-fleet-monitoring
+  PROJECT_ID: pht-01hrfr2t7yq                  # Google Cloud Project ID where the resources will be deployed.
+  REGION: northamerica-northeast1              # Deployment region for Google Cloud resources.
+  NAME: dhis2                                  # Naming prefix for created resources, aiding in identification and organization.
+  FLEET_HOST_PROJECT_ID: php-fleet-monitoring  # ID for the project hosting the fleet, used in Anthos Service Mesh (ASM).
 
 tasks:
   infra-up:
     desc: Create infrastructure components up to the cluster-level
     cmds:
-      # Enable APIs
+      # Enable necessary Google Cloud APIs required for the project's infrastructure setup.
       - gcloud services enable container.googleapis.com --project={{.PROJECT_ID}}
       - gcloud services enable mesh.googleapis.com --project={{.PROJECT_ID}}
       - gcloud services enable serviceusage.googleapis.com --project={{.PROJECT_ID}}
 
-      # Setup network / subnetwork for GKE
+      # Create a custom VPC network and a subnetwork for the GKE cluster, with specified MTU and BGP routing mode.
       - >
         gcloud compute networks create {{.NAME}}-net --subnet-mode=custom
         --bgp-routing-mode=regional --mtu=1460 --project={{.PROJECT_ID}}
@@ -24,7 +25,7 @@ tasks:
         --range=10.162.0.0/20 --region={{.REGION}} --enable-flow-logs
         --project={{.PROJECT_ID}}
 
-      # Setup GKE with least privilege service account
+      # Establish a service account for GKE nodes, granting minimal necessary permissions for operation, monitoring, and management.
       - gcloud iam service-accounts create gke-default --project {{.PROJECT_ID}}
       - >
         gcloud projects add-iam-policy-binding {{.PROJECT_ID}}
@@ -53,7 +54,7 @@ tasks:
         --subnetwork="projects/{{.PROJECT_ID}}/regions/{{.REGION}}/subnetworks/{{.NAME}}-subnet"
         --service-account="gke-default@{{.PROJECT_ID}}.iam.gserviceaccount.com"
 
-      # Setup provisioner account for config connector
+      # Provision an autopilot GKE cluster, specifying the network and subnetwork created earlier, and using the created service account.
       - gcloud iam service-accounts create {{.NAME}}-provisioner --project {{.PROJECT_ID}}
       - >
         gcloud projects add-iam-policy-binding {{.PROJECT_ID}}
