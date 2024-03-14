@@ -3,28 +3,40 @@ kind: Kustomization
 resources:
   - issuers.yaml
 patches:     
-- target:
-    group: cert-manager.io
-    version: v1
-    kind: ClusterIssuer
-    name: letsencrypt
-  patch: |-
-    - op: add
-      path: /spec/acme/solvers/-
-      value:
-        selector: {}
-        dns01:
-          cloudDNS:
-            project: pht-01hrfr2t7yq
-            hostedZoneName: dhis2-managed-zone
+  - target:
+      group: cert-manager.io
+      version: v1
+      kind: ClusterIssuer
+      name: letsencrypt-staging
+      namespace: istio-system
+    patch: |-
+      - op: add
+        path: /spec/acme/solvers/-
+        value:
+          selector: {}
+          dns01:
+            cloudDNS:
+              project: pht-01hrfr2t7yq
+              hostedZoneName: dhis2-managed-zone
+      - op: add
+        path: /spec/acme/email
+        value: simardeep.singh@phac-aspc.gc.ca
 
-- target:
-    group: cert-manager.io
-    version: v1
-    kind: ClusterIssuer
-    name: letsencrypt
-    namespace: istio-system
-  patch: |-
-    - op: add
-      path: /spec/acme/email
-      value: simardeep.singh@phac-aspc.gc.ca
+  - target:
+      group: cert-manager.io
+      version: v1
+      kind: ClusterIssuer
+      name: letsencrypt-production
+      namespace: istio-system
+    patch: |-
+      - op: add
+        path: /spec/acme/solvers/-
+        value:
+          selector: {}
+          dns01:
+            cloudDNS:
+              project: pht-01hrfr2t7yq
+              hostedZoneName: dhis2-managed-zone
+      - op: add
+        path: /spec/acme/email
+        value: simardeep.singh@phac-aspc.gc.ca
