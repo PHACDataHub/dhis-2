@@ -16,7 +16,6 @@ patches:
         dns01:
           cloudDNS:
             project: pht-01hrfr2t7yq
-            hostedZoneName: "beta-phac-aspc-gc-ca"
 
 - target:
     group: cert-manager.io
