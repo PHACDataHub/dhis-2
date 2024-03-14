@@ -56,4 +56,4 @@ spec:
   addressType: EXTERNAL  # Specifies that this IP address is external, used for internet-facing resources.
   description: DHIS2 external ip address for ingress gateway  # Details the purpose of the IP address.
   location: northamerica-northeast1  # The geographical location where the IP address is provisioned.
-  networkTier: STANDARD  # Specifies the networking tier, STANDARD in this case, indicating default routing and performance characteristics.
+  networkTier: PREMIUM  # Specifies the networking tier, STANDARD in this case, indicating default routing and performance characteristics.
