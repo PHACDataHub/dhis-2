@@ -16,6 +16,7 @@ patches:
         dns01:
           cloudDNS:
             project: pht-01hrfr2t7yq
+            hostedZoneName: dhis2-managed-zone
 
 - target:
     group: cert-manager.io
