@@ -16,3 +16,5 @@ spec:
     route:
     - destination:
         host: dhis2.dhis2.svc.cluster.local
+        port:
+          number: 8080
