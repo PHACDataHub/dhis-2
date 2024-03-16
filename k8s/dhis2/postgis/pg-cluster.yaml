@@ -7,7 +7,7 @@ metadata:
     app: dhis2-postgis16-cluster
 spec:
   imageName: ghcr.io/cloudnative-pg/postgis:16-3.4
-  instances: 3
+  instances: 1
   startDelay: 900
   stopDelay: 900
   primaryUpdateStrategy: unsupervised
@@ -39,14 +39,18 @@ spec:
 
 
   bootstrap:
-    initdb:
-      database: dhis
-      owner: dhis
-      postInitApplicationSQL:
-        - CREATE EXTENSION postgis;
-        - CREATE EXTENSION postgis_topology;
-        - CREATE EXTENSION fuzzystrmatch;
-        - CREATE EXTENSION postgis_tiger_geocoder;
+    recovery:
+      source: dhis2-postgres-restore
+
+  externalClusters:
+    - name: dhis2-postgres-restore
+      barmanObjectStore:
+        serverName: dhis2-postgis16-cluster
+        destinationPath: gs://dhis2-postgis-old-data-backup/
+        googleCredentials:
+          gkeEnvironment: true
+        wal:
+          maxParallel: 8
 
   storage:
     storageClass: standard
