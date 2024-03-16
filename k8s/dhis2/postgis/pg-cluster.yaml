@@ -47,6 +47,8 @@ spec:
         - CREATE EXTENSION postgis_topology;
         - CREATE EXTENSION fuzzystrmatch;
         - CREATE EXTENSION postgis_tiger_geocoder;
+    recovery:
+      source: dhis2-postgres-restore
 
   storage:
     storageClass: standard
@@ -77,6 +79,15 @@ spec:
       sidecar.istio.io/proxyCPU: 50m
       sidecar.istio.io/proxyMemory: 112Mi
 
+  externalClusters:
+    - name: dhis2-postgres-restore
+      barmanObjectStore:
+        serverName: dhis2-postgis16-cluster
+        destinationPath: gs://dhis2-postgis-old-data-backup/
+        googleCredentials:
+          gkeEnvironment: true
+        wal:
+          maxParallel: 8
   resources:
     requests:
       cpu: 450m
