@@ -1,1 +1,3 @@
 alerts-secret.yaml
+k8s/dhis2/postgis/pg-cluster copy.yaml
+k8s/dhis2/postgis/pg-cluster-restore-copy.yaml
