@@ -39,9 +39,10 @@ spec:
 
 
   bootstrap:
-    initdb:
+    recovery:
       database: dhis
       owner: dhis
+      source: dhis2-postgres-restore
       postInitApplicationSQL:
         - CREATE EXTENSION postgis;
         - CREATE EXTENSION postgis_topology;
@@ -81,3 +82,13 @@ spec:
     requests:
       cpu: 450m
       memory: 1926Mi
+  
+  externalClusters:
+    - name: dhis2-postgres-restore
+      barmanObjectStore:
+        serverName: dhis2-postgis16-cluster
+        destinationPath: gs://dhis2-postgis-old-data-backup/
+        googleCredentials:
+          gkeEnvironment: true
+        wal:
+          maxParallel: 8
