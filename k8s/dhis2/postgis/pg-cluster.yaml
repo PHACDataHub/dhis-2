@@ -40,9 +40,9 @@ spec:
 
   bootstrap:
     recovery:
+      source: dhis2-postgres-restore
       database: dhis
       owner: dhis
-      source: dhis2-postgres-restore
 
   storage:
     storageClass: standard
