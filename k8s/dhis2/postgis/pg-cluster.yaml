@@ -43,11 +43,6 @@ spec:
       database: dhis
       owner: dhis
       source: dhis2-postgres-restore
-      postInitApplicationSQL:
-        - CREATE EXTENSION postgis;
-        - CREATE EXTENSION postgis_topology;
-        - CREATE EXTENSION fuzzystrmatch;
-        - CREATE EXTENSION postgis_tiger_geocoder;
 
   storage:
     storageClass: standard
