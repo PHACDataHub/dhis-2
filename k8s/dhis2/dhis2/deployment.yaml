@@ -26,7 +26,7 @@ spec:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
         - name: dhis2
-          image: dhis2/core-dev:latest
+          image: dhis2/core:2.39
           imagePullPolicy: Always
           resources:
             requests:
