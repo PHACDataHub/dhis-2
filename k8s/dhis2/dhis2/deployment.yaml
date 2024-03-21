@@ -25,6 +25,8 @@ spec:
           securityContext:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
         - name: dhis2
           image: dhis2/core:2.39
           imagePullPolicy: Always
