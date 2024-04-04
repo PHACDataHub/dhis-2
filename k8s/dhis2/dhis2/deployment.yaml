@@ -4,7 +4,7 @@ metadata:
   name: dhis2
   namespace: dhis2
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: dhis2
