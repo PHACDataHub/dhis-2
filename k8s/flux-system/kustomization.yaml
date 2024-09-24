@@ -20,8 +20,8 @@ patches:
               - name: manager
                 resources:
                   requests:
-                    cpu: 250m
-                    memory: 512Mi
+                    cpu: 50m
+                    memory: 100Mi
   # patch kustomize-controller service account to access GCP KMS for decrypting secrets
   # See https://fluxcd.io/flux/guides/mozilla-sops/#google-cloud
   - patch: |

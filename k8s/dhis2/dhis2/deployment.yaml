@@ -30,7 +30,7 @@ spec:
           imagePullPolicy: Always
           resources:
             requests:
-              cpu: "2"
+              cpu: "50m"
               memory: "2Gi"
           securityContext:
             allowPrivilegeEscalation: false
