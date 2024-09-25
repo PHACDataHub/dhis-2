@@ -37,6 +37,9 @@ patches:
           requests:
             cpu: 50m
             memory: 100Mi
+          limits:
+            cpu: 150m
+            memory: 300Mi            
             
   - target:
       group: apps
@@ -56,6 +59,9 @@ patches:
           requests:
             cpu: 50m
             memory: 100Mi
+          limits:
+            cpu: 150m
+            memory: 300Mi            
 
   - target:
       group: apps
@@ -70,6 +76,9 @@ patches:
           requests:
             cpu: 50m
             memory: 100Mi
+          limits:
+            cpu: 150m
+            memory: 300Mi            
 
   - target:
       kind: "(Role|RoleBinding)"

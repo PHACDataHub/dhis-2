@@ -28,7 +28,10 @@ patches:
                 resources:
                   requests:
                     cpu: 50m
-                    memory: 400Mi   
+                    memory: 400Mi
+                  limits:
+                    cpu: 150m
+                    memory: 1Gi                        
               - name: istio-proxy
                 image: auto
                 resources:
