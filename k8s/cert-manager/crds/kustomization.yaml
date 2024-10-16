@@ -35,8 +35,11 @@ patches:
         path: /spec/template/spec/containers/0/resources
         value:
           requests:
-            cpu: 250m
-            memory: 512Mi
+            cpu: 50m
+            memory: 100Mi
+          limits:
+            cpu: 150m
+            memory: 300Mi            
             
   - target:
       group: apps
@@ -54,8 +57,11 @@ patches:
         path: /spec/template/spec/containers/0/resources
         value:
           requests:
-            cpu: 250m
-            memory: 512Mi
+            cpu: 50m
+            memory: 100Mi
+          limits:
+            cpu: 150m
+            memory: 300Mi            
 
   - target:
       group: apps
@@ -68,8 +74,11 @@ patches:
         path: /spec/template/spec/containers/0/resources
         value:
           requests:
-            cpu: 250m
-            memory: 512Mi
+            cpu: 50m
+            memory: 100Mi
+          limits:
+            cpu: 150m
+            memory: 300Mi            
 
   - target:
       kind: "(Role|RoleBinding)"
