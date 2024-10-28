@@ -53,7 +53,7 @@ spec:
     size: 5Gi
 
   nodeMaintenanceWindow:
-    inProgress: true
+    inProgress: false
     reusePVC: true
 
   serviceAccountTemplate:
