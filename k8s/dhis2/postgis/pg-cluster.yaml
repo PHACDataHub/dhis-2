@@ -39,14 +39,8 @@ spec:
 
 
   bootstrap:
-    initdb:
-      database: dhis
-      owner: dhis
-      postInitApplicationSQL:
-        - CREATE EXTENSION postgis;
-        - CREATE EXTENSION postgis_topology;
-        - CREATE EXTENSION fuzzystrmatch;
-        - CREATE EXTENSION postgis_tiger_geocoder;
+    recovery:
+      source: dhis2-postgis16-restore
 
   storage:
     storageClass: standard
@@ -54,7 +48,7 @@ spec:
 
   nodeMaintenanceWindow:
     inProgress: false
-    reusePVC: true
+    reusePVC: false
 
   serviceAccountTemplate:
     metadata:
@@ -66,7 +60,7 @@ spec:
   # info: https://cloudnative-pg.io/documentation/1.21/appendixes/object_stores/#running-inside-google-kubernetes-engine
   backup:
     barmanObjectStore:
-      destinationPath: gs://dhis2-postgis-backup-pht-01hrfr2t7yq
+      destinationPath: gs://dhis2-postgis-pht-01hrfr2t7yq
       googleCredentials:
         gkeEnvironment: true
     retentionPolicy: "90d"
@@ -84,3 +78,13 @@ spec:
     limits:
       cpu: 150m
       memory: 2.5Gi      
+
+  externalClusters:
+    - name: dhis2-postgis16-restore
+      barmanObjectStore:
+        serverName: dhis2-postgis16-cluster
+        destinationPath: gs://dhis2-postgis-backup-pht-01hrfr2t7yq/
+        googleCredentials:
+          gkeEnvironment: true
+        wal:
+          maxParallel: 8
