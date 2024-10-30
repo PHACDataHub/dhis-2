@@ -42,6 +42,7 @@ spec:
     recovery:
       source: dhis2-postgis16-restore
       owner: dhis
+      database: dhis
 
   storage:
     storageClass: standard
