@@ -41,6 +41,7 @@ spec:
   bootstrap:
     recovery:
       source: dhis2-postgis16-restore
+      owner: dhis
 
   storage:
     storageClass: standard
