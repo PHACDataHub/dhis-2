@@ -1,76 +1,116 @@
-# Kubernetes Cluster Configuration for DHIS2 with PostGIS
+# DHIS2 with PostGIS on Kubernetes
 
-This repository contains the necessary Kubernetes configurations to set up and manage the DHIS2 application with a CNPG PostGIS database within a Kubernetes cluster. Below are the components and their respective purposes within our infrastructure.
+Welcome to the DHIS2 Kubernetes deployment repository! This repository contains all the configurations you need to set up and manage DHIS2 on Kubernetes, backed by a PostgreSQL database with the PostGIS extension for geospatial data support. This setup offers a cloud-native, scalable, and secure environment for running DHIS2.
 
-## Components Overview
+## About DHIS2
+
+[DHIS2](https://dhis2.org) (District Health Information Software 2) is an open-source platform designed to capture, manage, and analyze health data at both individual and aggregate levels. Originally developed by the Health Information Systems Program (HISP) at the University of Oslo, DHIS2 is now used by governments, NGOs, and other organizations across 70+ countries, making it one of the world’s largest health information management systems.
+
+### Core Functionalities
+
+- **Data Collection and Aggregation**: Allows users to capture and consolidate health-related data from various sources, including health facilities, mobile devices, and community reports.
+- **Real-Time Data Analysis**: Provides powerful analytics tools for creating charts, pivot tables, dashboards, and GIS maps, helping stakeholders make data-driven decisions.
+- **Geospatial Analysis**: With support for PostGIS, DHIS2 enables geolocation-based tracking, which is vital for managing resources, tracking disease outbreaks, and planning healthcare coverage.
+- **Metadata and Hierarchies**: Supports flexible metadata hierarchies, making it adaptable to different administrative levels (e.g., national, regional, district).
+- **Event and Case Tracking**: Tracks individual health events, enabling better patient and case management. This is especially useful for infectious disease surveillance, immunization programs, and chronic disease management.
+- **Program Management**: Facilitates the management of health programs by enabling configuration of program stages, workflows, and reports tailored to specific health objectives.
+- **Interoperability**: Compatible with standards like HL7 FHIR and integrates with other health information systems, enabling data exchange between different healthcare systems.
+
+### Common Use Cases
+
+- **Health Program Management**: DHIS2 is used to manage immunization, maternal and child health, HIV, TB, and other health programs.
+- **Disease Surveillance**: Real-time data collection and geospatial analysis are used to track infectious disease outbreaks, manage vaccinations, and monitor chronic health conditions.
+- **Resource Planning and Allocation**: Public health organizations leverage DHIS2’s analytics to allocate resources efficiently based on population health needs.
+- **Reporting for Funders and Stakeholders**: DHIS2 provides comprehensive reporting tools, enabling NGOs and government agencies to report on health outcomes and compliance to funders.
+
+### Accessibility in DHIS2
+
+DHIS2 is built with accessibility in mind, aiming to provide usability across a wide range of contexts:
+- **Multi-language Support**: Users can choose their preferred language, making DHIS2 adaptable for global use.
+- **Offline Data Capture**: Allows health workers in remote areas to collect data offline and sync it when connectivity is restored.
+- **WCAG Compliance**: Designed following web accessibility standards, DHIS2 is usable for people with disabilities, ensuring inclusivity.
+
+## About Cloud Native PostgreSQL (CNPG) with PostGIS
+
+For geospatial data handling, this deployment uses **CNPG** (Cloud Native PostgreSQL) with the **PostGIS** extension. PostGIS extends PostgreSQL to store geographic data types, making it essential for DHIS2’s mapping and spatial functionalities.
+
+### Key Features of CNPG with PostGIS
+
+- **Kubernetes-native Management**: CNPG is designed to run seamlessly within Kubernetes, providing better scalability, resilience, and easier management through native Kubernetes capabilities.
+- **High Availability**: CNPG is configured for replication and failover, ensuring continuous availability and reliability.
+- **Geospatial Data Support with PostGIS**: PostGIS enables the storage, retrieval, and analysis of spatial data, necessary for DHIS2’s geolocation features and GIS mapping.
+
+## Repository Structure
+
+```plaintext
+.
+├── README.md                     # Documentation (this file)
+├── Taskfile.yaml                 # Automates setup and deployment tasks
+├── infrastructure/               # GCP resources configurations
+│   ├── api.yaml                  # API Gateway setup
+│   ├── bucket.yaml               # Storage bucket configuration
+│   └── ...                       # Other GCP resource configurations
+└── k8s/                          # Kubernetes configurations
+    ├── cert-manager/             # Manages TLS certificates for secure communication
+    ├── cnpg-system/              # Configures PostgreSQL + PostGIS
+    ├── cnrm-system/              # Google Cloud Platform resources managed by Kubernetes
+    ├── configconnector-operator-system/ # Config Connector Operator for GCP
+    ├── dhis2/                    # DHIS2 application deployment files
+    ├── flux-system/              # GitOps setup with Flux for automated syncing
+    └── istio-ingress/            # Ingress and traffic management using Istio
+
+## Components
 
 ### cert-manager
-Manages TLS certificates to ensure secure communication within the cluster and for inbound traffic.
+Handles TLS certificates to secure communication both within the cluster and externally by managing and renewing SSL/TLS certificates automatically.
 
 ### cnpg-system
-Houses the configurations for Containerized PostgreSQL with PostGIS, providing spatial database capabilities for DHIS2.
+This directory includes the configurations to set up Cloud Native PostgreSQL with PostGIS, providing the geospatial database layer that DHIS2 requires for mapping and spatial analysis.
 
 ### cnrm-system
-Manages Google Cloud Platform (GCP) resources via Kubernetes configurations.
+Manages Google Cloud Platform (GCP) resources through Kubernetes configurations, allowing a seamless Kubernetes-native approach to provisioning and managing GCP resources.
 
 ### configconnector-operator-system
-Operates the Config Connector to keep GCP resources and Kubernetes configurations in sync.
+Deploys the Config Connector operator, which synchronizes GCP resources with Kubernetes configurations, ensuring cloud infrastructure aligns with Kubernetes changes.
 
 ### dhis2
-Contains deployment configurations for the DHIS2 application, designed to connect with the PostGIS database.
+This directory contains the deployment configurations for DHIS2, including settings for connecting to the CNPG database and scaling the application within Kubernetes.
 
 ### flux-system
-Utilizes Flux to implement GitOps, automatically applying changes from a Git repository to the cluster.
+Uses Flux to implement GitOps, enabling automatic application of any configuration changes from this Git repository to the Kubernetes cluster.
 
 ### istio-ingress
-Configures Istio as an Ingress controller to manage external access to services in the cluster.
+Configures Istio as the Ingress controller for managing external access to services within the cluster. Istio also uses mTLS to secure service-to-service communication.
 
-## Flux Configuration
+## Getting Started
 
-Flux is used to keep our Kubernetes cluster state synchronized with the configuration defined in our git repository. The `sync.yaml` file is a key part of this setup.
+### Prerequisites
 
-### sync.yaml Overview
-The `sync.yaml` file contains the Flux GitRepository and Kustomization resources, defining where Flux should look for the configuration files and how they should be applied to the cluster.
+- A Kubernetes cluster, accessible with `kubectl`
+- Persistent storage for data (e.g., dynamic provisioner or PersistentVolumes)
+- Google Cloud Platform account with Config Connector permissions
+- Flux installed for GitOps configuration management
+- Domain name and SSL/TLS setup if external access is required
 
-### Applying sync.yaml
-To apply the `sync.yaml` file and enable Flux syncing:
+### Deployment Instructions
 
-```bash
-kubectl apply -f path/to/sync.yaml
+1. Clone this repository and navigate to the project directory.
+2. Apply Infrastructure Configurations to set up GCP resources and other required infrastructure.
+3. Deploy DHIS2 on Kubernetes.
+4. Enable GitOps with Flux to ensure continuous synchronization with the Git repository.
 
+## Configuration Overview
 
-### Deployment Process
+- **Database Connection**: Environment variables (`DB_USERNAME`, `DB_PASSWORD`, `DB_HOST`) are managed through Kubernetes secrets, ensuring secure database connectivity for DHIS2.
+- **ConfigMaps and Secrets**: Store non-sensitive configuration data and sensitive information (like database credentials) securely.
+- **Istio Ingress**: Ensures secure communication and traffic routing with mutual TLS (mTLS) and routing rules for DHIS2 services.
 
-1. **DHIS2 Kubernetes Deployment**: We deploy DHIS2 as a set of replicated pods within the Kubernetes cluster to ensure high availability. The deployment configuration specifies the DHIS2 Docker image and sets the necessary environment variables for database connectivity.
+## Backup and Restore
 
-   - **Database Connectivity**: Environment variables `DB_USERNAME` and `DB_PASSWORD` are set through Kubernetes secrets to maintain security. These credentials are used by DHIS2 to connect to the CNPG PostGIS database.
+Automated backups are managed using Kubernetes CronJobs, while restore scripts in `k8s/dhis2/postgis/restore` allow recovery from backups or object storage.
 
-2. **CNPG Database Setup**: The CNPG system provides a PostgreSQL database with the PostGIS extension. It includes its own set of Kubernetes objects like Deployments, Services, and PersistentVolumeClaims to ensure data persistence.
+## Flux GitOps Setup
 
-   - **Integration with DHIS2**: DHIS2 connects to the CNPG database using a JDBC URL specified in the environment variables or a configuration file. This URL includes the service name of the CNPG database as the hostname, which Kubernetes resolves internally.
+Flux enables continuous synchronization between this Git repository and the cluster, ensuring any configuration updates are automatically deployed.
 
-3. **ConfigMaps and Secrets**: Configuration Maps (ConfigMaps) and Secrets store configuration data and sensitive information respectively. They are mounted into DHIS2 pods as environment variables or files.
-
-   - **ConfigMaps**: May include configurations like system settings or overrides.
-   - **Secrets**: Store sensitive information like database credentials, used by both DHIS2 and CNPG deployments.
-
-# cnpg-system
-
-
-The `cnpg-system` directory contains the necessary configurations for deploying a containerized PostgreSQL database with the PostGIS extension, which enables spatial and geographic data support. This setup is tailored for Kubernetes environments, allowing for scalable and managed database services.
-
-## Prerequisites
-
-Before deploying the CNPG system, the following prerequisites must be met:
-
-- A Kubernetes cluster set up and accessible.
-- PersistentVolumes (PV) provisioned or a dynamic storage provisioner configured.
-- Necessary RBAC roles and RoleBindings set up for resource access within the cluster.
-
-## Deployment
-
-The deployment process involves several Kubernetes manifests that set up the CNPG system:
-
-- **PersistentVolumeClaims (PVCs)**: For data storage and persistence.
-- **Deployments**: To run the PostgreSQL with PostGIS containers.
-- **Services**: To expose the database within the cluster.
+To manually sync Flux, apply the Flux sync configuration.
