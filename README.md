@@ -58,7 +58,7 @@ For geospatial data handling, this deployment uses **CNPG** (Cloud Native Postgr
     ├── dhis2/                    # DHIS2 application deployment files
     ├── flux-system/              # GitOps setup with Flux for automated syncing
     └── istio-ingress/            # Ingress and traffic management using Istio
-
+```
 ## Components
 
 ### cert-manager
