@@ -4,5 +4,6 @@ resources:
 - configMap.yaml
 - deployment.yaml
 - service.yaml
-- hpa.yaml
-- virtualService.yaml
+#Shutting Down DHIS-2
+# - hpa.yaml
+# - virtualService.yaml
